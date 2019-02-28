@@ -1,0 +1,53 @@
+const fileExists = require('file-exists');
+const crossSpawn = require('cross-spawn');
+const debug = require('debug')('ensure-git-repo');
+const fs = require('fs');
+const path = require('path');
+
+// gitPullOrClone('git@e.coding.net:value/ifpay-poppy.git', '/Users/alex/Projects/test/ccc', ()=>{
+//   console.log('111');
+// });
+
+function gitPullOrClone (url, outPath, cb) {
+  // ensure rw
+  // is a exist git repo
+  if (fileExists.sync(outPath) && fileExists.sync(path.join(outPath, '/.git'))) {
+    // console.log('1231323');
+    gitPull();
+  } else {
+    gitClone();
+    // console.log('45677');
+  }
+
+  function gitClone () {
+    const args = [ 'clone', '--depth', 1, url, outPath ]
+    debug('git ' + args.join(' '))
+    spawn('git', args, {}, function (err) {
+      if (err) err.message += ' (git clone) (' + url + ')'
+      cb(err)
+    })
+  }
+
+  function gitPull () {
+    const args = [ 'pull', '--depth', 1 ]
+    debug('git ' + args.join(' '))
+    spawn('git', args, { cwd: outPath }, function (err) {
+      if (err) err.message += ' (git pull) (' + url + ')'
+      cb(err)
+    })
+  }
+}
+
+function spawn (command, args, opts, cb) {
+  opts.stdio = debug.enabled ? 'inherit' : 'ignore'
+
+  const child = crossSpawn(command, args, opts)
+  child.on('error', cb)
+  child.on('close', function (code) {
+    if (code !== 0) return cb(new Error('Non-zero exit code: ' + code))
+    cb(null)
+  });
+  return child
+}
+
+module.exports = gitPullOrClone;

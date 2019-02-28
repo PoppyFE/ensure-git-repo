@@ -1,4 +1,3 @@
-const fileExists = require('file-exists');
 const crossSpawn = require('cross-spawn');
 const debug = require('debug')('ensure-git-repo');
 const fs = require('fs');
@@ -11,12 +10,10 @@ const path = require('path');
 function gitPullOrClone (url, outPath, cb) {
   // ensure rw
   // is a exist git repo
-  if (fileExists.sync(outPath) && fileExists.sync(path.join(outPath, '/.git'))) {
-    // console.log('1231323');
+  if (fs.existsSync(outPath) && fs.existsSync(path.join(outPath, '/.git'))) {
     gitPull();
   } else {
     gitClone();
-    // console.log('45677');
   }
 
   function gitClone () {
@@ -39,7 +36,7 @@ function gitPullOrClone (url, outPath, cb) {
 }
 
 function spawn (command, args, opts, cb) {
-  opts.stdio = debug.enabled ? 'inherit' : 'ignore'
+  opts.stdio = 'inherit';
 
   const child = crossSpawn(command, args, opts)
   child.on('error', cb)

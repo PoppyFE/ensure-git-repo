@@ -1,6 +1,6 @@
 {
   "name": "ensure-git-repo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "repository": "git@github.com:ValueFE/ensure-git-repo.git",
   "author": "alex zhang <gzane24@gmail.com>",
@@ -8,7 +8,7 @@
   "dependencies": {
     "cross-spawn": "^6.0.5",
     "debug": "^4.1.1",
-    "file-exists": "^5.0.1"
+    "shelljs": "^0.8.3"
   },
   "files": [
     "index.js"
